@@ -29,7 +29,7 @@ app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send({todos});
     }).catch((e) => {
-        res.status(400).send(err);
+        res.status(400).send(e);
     });
 });
 
@@ -103,6 +103,23 @@ app.patch('/todos/:id', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server listening at port ${port}....`);
+});
+
+app.post('/users', (req, res) => {
+    
+    let user = new User({
+        email: req.body.email,
+        password: req.body.password
+    });
+
+    user.save().then(() => {
+        // res.status(200).send(user);
+        return user.genearateAuthToken();
+    }).then((token) => {
+        res.header('x-auth').send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
 });
 
 module.exports = {
